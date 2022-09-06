@@ -1,6 +1,6 @@
 //hi mdfsa
-const queryString = require("query-string");
 const http = require("http");
+const queryString = require("query-string");
 //request, responce(les elements pour produire une reponse)
 const server = http.createServer((req, res) => {
   console.log(req.url);
@@ -21,25 +21,21 @@ const server = http.createServer((req, res) => {
   } else {
     if (req.method == "POST") {
       let body = [];
-      req
-        .on("data", (chunk) => {
-          body.push(chunk);
-        })
-        .on("end", () => {
-          try {
-            if (req.headers["content-type"] === "application/json")
-              reqInfo.body = JSON.parse(body);
-            else if (
-              req.headers["content-type"] ===
-              "application/x-www-form-urlencoded"
-            )
-              reqInfo.body = queryString.parse(body.toString());
-            else reqInfo.body = body.toString();
-            res.end(JSON.stringify(reqInfo));
-          } catch (error) {
-            console.log(error);
-          }
-        });
+      req.on("data", (chunk) => {
+        body.push(chunk);
+      }).on("end", () => {
+        try {
+          if (req.headers["content-type"] === "application/json")
+            reqInfo.body = JSON.parse(body);
+          // si un formulaire html
+          else if (req.headers["content-type"] === "application/x-www-form-urlencoded")
+            reqInfo.body = queryString.parse(body.toString());
+          else reqInfo.body = body.toString();
+          res.end(JSON.stringify(reqInfo));
+        } catch (error) {
+          console.log(error);
+        }
+      });
     }
   }
 });
